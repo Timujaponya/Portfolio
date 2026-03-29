@@ -1,6 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const upload = require('../middleware/upload');
+const fs = require('fs');
+const path = require('path');
+const { publicBaseUrl, uploadDir } = require('../config/env.js');
+
+function getPublicBaseUrl(req) {
+  if (publicBaseUrl) {
+    return publicBaseUrl;
+  }
+
+  const forwardedProto = req.headers['x-forwarded-proto'];
+  const forwardedHost = req.headers['x-forwarded-host'];
+
+  if (forwardedProto && forwardedHost) {
+    return `${forwardedProto}://${forwardedHost}`;
+  }
+
+  return `${req.protocol}://${req.get('host')}`;
+}
 
 // POST /api/upload - Tek dosya yükleme (resim veya PDF)
 router.post('/', upload.single('file'), (req, res) => {
@@ -10,7 +28,7 @@ router.post('/', upload.single('file'), (req, res) => {
     }
 
     // Dosya URL'ini döndür
-    const fileUrl = `http://localhost:3000/uploads/${req.file.filename}`;
+    const fileUrl = `${getPublicBaseUrl(req)}/uploads/${req.file.filename}`;
     
     res.status(200).json({
       message: 'Dosya başarıyla yüklendi',
@@ -34,13 +52,12 @@ router.post('/icon', upload.single('icon'), (req, res) => {
     const allowedTypes = ['image/svg+xml', 'image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
     if (!allowedTypes.includes(req.file.mimetype)) {
       // Dosyayı sil
-      const fs = require('fs');
       fs.unlinkSync(req.file.path);
       return res.status(400).json({ message: 'Sadece SVG, PNG, JPG veya WebP dosyaları yükleyebilirsiniz!' });
     }
 
     // Icon URL'ini döndür
-    const iconUrl = `http://localhost:3000/uploads/${req.file.filename}`;
+    const iconUrl = `${getPublicBaseUrl(req)}/uploads/${req.file.filename}`;
     
     res.status(200).json({
       message: 'Icon başarıyla yüklendi',
@@ -56,10 +73,8 @@ router.post('/icon', upload.single('icon'), (req, res) => {
 // DELETE /api/upload/:filename - Dosya silme
 router.delete('/:filename', (req, res) => {
   try {
-    const fs = require('fs');
-    const path = require('path');
     const filename = req.params.filename;
-    const filePath = path.join(__dirname, '../uploads', filename);
+    const filePath = path.join(uploadDir, filename);
 
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);

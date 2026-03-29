@@ -11,13 +11,26 @@ Bu proje monorepo olduğu icin Railway tarafinda iki ayri servis olusturmaniz ge
 3. Servis ayarlarinda `Root Directory` degerini `backend` yap.
 4. Environment Variables ekle:
    - `MONGODB_URI` = MongoDB connection string
-   - `PORT` = `3000` (Railway yine de runtime'da kendi portunu verebilir)
    - `NODE_ENV` = `production`
    - `CORS_ORIGINS` = `https://<client-servis-domaini>`
      - Birden fazla domain varsa virgulle ayir:
        `https://a.up.railway.app,https://b.up.railway.app`
+   - `UPLOAD_DIR` = `/data/uploads`
+   - `PUBLIC_BASE_URL` = `https://<backend-domain>`
 5. Deploy et.
 6. API saglik kontrolu: `https://<backend-domain>/api/health` -> `{ "status": "ok" }`
+
+## 1.1) Backend icin Kalici Dosya (Volume) Ayari
+
+Railway restart veya yeni deploy sonrasinda yuklenen dosyalarin silinmemesi icin backend servisine volume bagla:
+
+1. Backend servisine gir.
+2. `Volumes` sekmesine git.
+3. `New Volume` olustur.
+4. `Mount Path` olarak `/data` gir.
+5. Kaydet ve yeniden deploy et.
+
+Bu ayarla backend, uploadlari `/data/uploads` altina yazar ve dosyalar kalici olur.
 
 ## 2) Client Servisi
 
@@ -43,3 +56,4 @@ Client domain belli olduktan sonra backend servisinde `CORS_ORIGINS` degerini ke
 - `VITE_*` env degerleri frontend bundle icine gomulur. Gizli anahtar koyma.
 - Admin sifresini frontend'de tutmak guvenli degildir. Uretimde backend tabanli auth (JWT/session) kullan.
 - Bu projede backend icin health endpoint hazir: `/api/health`.
+- Upload dosyalari backend servisinde tutulur; client servisine volume baglamaya gerek yoktur.

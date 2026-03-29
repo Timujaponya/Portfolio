@@ -1,4 +1,5 @@
 require("dotenv").config();
+const path = require("path");
 
 const defaultCorsOrigins = [
     "http://localhost:5173",
@@ -25,5 +26,7 @@ module.exports = {
     port:process.env.PORT || 3000,
     mongoUri:process.env.MONGODB_URI,
     nodeEnv:process.env.NODE_ENV || "development",
-    corsOrigins:parseCorsOrigins(process.env.CORS_ORIGINS)
+    corsOrigins:parseCorsOrigins(process.env.CORS_ORIGINS),
+    uploadDir: process.env.UPLOAD_DIR || path.join(__dirname, "..", "uploads"),
+    publicBaseUrl: (process.env.PUBLIC_BASE_URL || "").replace(/\/+$/, "")
 }

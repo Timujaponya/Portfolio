@@ -8,7 +8,7 @@ const profileRouter = require("./routes/profile.js");
 const servicesRouter = require("./routes/services.js");
 const uploadRouter = require("./routes/upload.js");
 const cors = require("cors");
-const { corsOrigins } = require("./config/env.js");
+const { corsOrigins, uploadDir } = require("./config/env.js");
 
 
 const app = express();
@@ -35,7 +35,7 @@ app.get("/api/health", (req, res) => {
 });
 
 // Static files - Yüklenen resimleri serve et
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(uploadDir));
 
 app.use("/api/projects", projectsRouter); // projectRouter
 app.use("/api/profile", profileRouter); // profileRouter
