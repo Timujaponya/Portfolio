@@ -6,7 +6,18 @@ const projectService = require("../services/projectService");
 // GET /api/projects
 exports.getProjects = async(req, res, next) => {
     try{
-        const result = await projectService.getProjects(); 
+        const projects = await projectService.getPublicProjects(); 
+
+        res.status(200).json({message: "projects found", projects});
+    }catch(err){
+        next(err)
+    }
+};
+
+// GET /api/projects/admin
+exports.getProjectsAdmin = async(req, res, next) => {
+    try{
+        const result = await projectService.getAdminProjects(); 
 
         res.status(200).json({message: "projects found",result});
     }catch(err){

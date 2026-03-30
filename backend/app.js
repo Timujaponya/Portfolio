@@ -1,7 +1,6 @@
 // app kurulumu ve kullanılacak middleware ve route benzeri belirtmeler burada yapılıyor
 
 const express = require("express");
-const path = require("path");
 const { errorHandler } = require("./middleware/errorHandler");
 const projectsRouter = require("./routes/projects.js");
 const profileRouter = require("./routes/profile.js");

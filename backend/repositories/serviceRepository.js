@@ -3,15 +3,15 @@
 const Service = require("../models/Service");
 
 exports.getAllServices = async () => {
-    return await Service.find().sort({ order: 1 });
+    return await Service.find().sort({ order: 1 }).lean();
 };
 
 exports.getActiveServices = async () => {
-    return await Service.find({ isActive: true }).sort({ order: 1 });
+    return await Service.find({ isActive: true }).sort({ order: 1 }).lean();
 };
 
 exports.getServiceById = async (id) => {
-    return await Service.findById(id);
+    return await Service.findById(id).lean();
 };
 
 exports.createService = async (data) => {

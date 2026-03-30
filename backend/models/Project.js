@@ -30,6 +30,9 @@ projectSchema.pre("findOneAndUpdate", function(next) {
   next();
 });
 
+projectSchema.index({ isActive: 1, order: 1 });
+projectSchema.index({ category: 1, isActive: 1 });
+
 
 const Project = mongoose.model("Project", projectSchema)
 
