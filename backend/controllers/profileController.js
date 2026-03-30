@@ -6,6 +6,24 @@ const profileService = require("../services/profileService");
 exports.getProfile = async (req, res, next) => {
     try {
         const profile = await profileService.getProfile();
+        if (!profile) {
+            return res.status(404).json({ message: "Profile not found" });
+        }
+
+        // PUBLIC_BASE_URL'i al
+        const publicBaseUrl = process.env.PUBLIC_BASE_URL?.replace(/\/+$/, "");
+        // avatarUrl ve cvUrl path ise tam URL'ye çevir
+        const patchUrl = (url) => {
+            if (!url) return url;
+            if (/^https?:\/\//.test(url)) return url;
+            if (publicBaseUrl && url.startsWith("/uploads/")) {
+                return `${publicBaseUrl}${url}`;
+            }
+            return url;
+        };
+        profile.avatarUrl = patchUrl(profile.avatarUrl);
+        profile.cvUrl = patchUrl(profile.cvUrl);
+
         res.status(200).json({ message: "Profile found", profile });
     } catch (err) {
         next(err);
