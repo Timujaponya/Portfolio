@@ -460,7 +460,7 @@ const ProfileEditor = ({ profile, onSave }: ProfileEditorProps) => {
             </div>
           ))}
         </div>
-        <button type="button" onClick={addTech} className="add-tech-btn">
+        <button type="button" onClick={() => addTech()} className="add-tech-btn">
           Yeni Teknoloji Ekle
         </button>
       </div>
