@@ -1,10 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import * as SolidIcons from '@fortawesome/free-solid-svg-icons';
-import * as BrandIcons from '@fortawesome/free-brands-svg-icons';
-// React Icons - Devicon seti için
-import * as DevIcons from 'react-icons/di';
 import './IconPicker.css';
 
 interface IconPickerProps {
@@ -16,33 +12,16 @@ interface IconPickerProps {
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
-// Font Awesome + Devicon icon setlerini birleştir
-const getAllIcons = () => {
-  const icons: { [key: string]: IconDefinition | any } = {};
-  
-  // Solid icons
-  Object.keys(SolidIcons).forEach((key) => {
-    if (key.startsWith('fa') && key !== 'fas' && key !== 'far' && key !== 'fal' && key !== 'fad' && key !== 'fab') {
-      icons[key] = (SolidIcons as any)[key];
-    }
-  });
-  
-  // Brand icons
-  Object.keys(BrandIcons).forEach((key) => {
-    if (key.startsWith('fa') && key !== 'fab') {
-      icons[key] = (BrandIcons as any)[key];
-    }
-  });
-  
-  // Devicon icons (C++, C#, Unity, Unreal, vs.)
-  Object.keys(DevIcons).forEach((key) => {
-    if (key.startsWith('Di')) {
-      icons[key] = (DevIcons as any)[key];
-    }
-  });
-  
-  return icons;
-};
+type DevIconComponent = React.ComponentType<{ size?: number }>;
+type IconEntry = IconDefinition | DevIconComponent;
+type IconMap = Record<string, IconEntry>;
+
+const shouldIncludeSolidIcon = (key: string) =>
+  key.startsWith('fa') && key !== 'fas' && key !== 'far' && key !== 'fal' && key !== 'fad' && key !== 'fab';
+
+const shouldIncludeBrandIcon = (key: string) => key.startsWith('fa') && key !== 'fab';
+
+const shouldIncludeDevIcon = (key: string) => key.startsWith('Di');
 
 const iconCategories = {
   'Programming Languages': [
@@ -85,8 +64,55 @@ const IconPicker = ({ value, onChange, label = 'Icon Seç', allowCustomUpload = 
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [maxDisplay, setMaxDisplay] = useState(200); // Başlangıçta 200 icon göster
   const [uploading, setUploading] = useState(false);
-  
-  const allIcons = getAllIcons();
+  const [allIcons, setAllIcons] = useState<IconMap>({});
+  const [iconsLoaded, setIconsLoaded] = useState(false);
+  const [iconsLoading, setIconsLoading] = useState(false);
+
+  const loadIcons = useCallback(async () => {
+    if (iconsLoaded || iconsLoading) return;
+
+    setIconsLoading(true);
+    try {
+      const [solidModule, brandModule, devModule] = await Promise.all([
+        import('@fortawesome/free-solid-svg-icons'),
+        import('@fortawesome/free-brands-svg-icons'),
+        import('react-icons/di'),
+      ]);
+
+      const icons: IconMap = {};
+
+      Object.keys(solidModule).forEach((key) => {
+        if (shouldIncludeSolidIcon(key)) {
+          icons[key] = solidModule[key as keyof typeof solidModule] as IconDefinition;
+        }
+      });
+
+      Object.keys(brandModule).forEach((key) => {
+        if (shouldIncludeBrandIcon(key)) {
+          icons[key] = brandModule[key as keyof typeof brandModule] as IconDefinition;
+        }
+      });
+
+      Object.keys(devModule).forEach((key) => {
+        if (shouldIncludeDevIcon(key)) {
+          icons[key] = devModule[key as keyof typeof devModule] as DevIconComponent;
+        }
+      });
+
+      setAllIcons(icons);
+      setIconsLoaded(true);
+    } catch (error) {
+      console.error('Icon libraries failed to load:', error);
+    } finally {
+      setIconsLoading(false);
+    }
+  }, [iconsLoaded, iconsLoading]);
+
+  useEffect(() => {
+    if (isOpen) {
+      void loadIcons();
+    }
+  }, [isOpen, loadIcons]);
   
   // Kategori veya arama değiştiğinde limiti resetle
   useEffect(() => {
@@ -117,17 +143,11 @@ const IconPicker = ({ value, onChange, label = 'Icon Seç', allowCustomUpload = 
       const formData = new FormData();
       formData.append('icon', file);
       
-      console.log('Uploading icon to:', `${API_URL}/upload/icon`);
-      console.log('File:', file.name, file.type, file.size);
-      
       const res = await fetch(`${API_URL}/upload/icon`, {
         method: 'POST',
         body: formData
       });
-      
-      console.log('Upload response status:', res.status);
       const data = await res.json();
-      console.log('Upload response data:', data);
       
       if (res.ok) {
         // Custom icon URL'ini döndür - "custom:" prefix ile işaretle
@@ -145,27 +165,24 @@ const IconPicker = ({ value, onChange, label = 'Icon Seç', allowCustomUpload = 
     }
   };
   
-  // Filtreleme
-  const getFilteredIcons = () => {
+  const allFilteredIcons = useMemo(() => {
     let iconList = Object.keys(allIcons);
-    
+
     // Kategori filtresi
     if (selectedCategory !== 'All') {
       const categoryIcons = iconCategories[selectedCategory as keyof typeof iconCategories] || [];
-      iconList = iconList.filter(key => categoryIcons.includes(key));
+      iconList = iconList.filter((key) => categoryIcons.includes(key));
     }
-    
+
     // Arama filtresi
     if (search) {
-      iconList = iconList.filter(key => 
-        key.toLowerCase().includes(search.toLowerCase())
-      );
+      const normalizedSearch = search.toLowerCase();
+      iconList = iconList.filter((key) => key.toLowerCase().includes(normalizedSearch));
     }
-    
+
     return iconList;
-  };
-  
-  const allFilteredIcons = getFilteredIcons();
+  }, [allIcons, search, selectedCategory]);
+
   const filteredIcons = allFilteredIcons.slice(0, maxDisplay);
   
   const handleSelect = (iconName: string) => {
@@ -187,20 +204,22 @@ const IconPicker = ({ value, onChange, label = 'Icon Seç', allowCustomUpload = 
     
     // Eğer React Icons (Devicon) ise
     if (iconName.startsWith('Di')) {
-      const IconComponent = icon;
+      const IconComponent = icon as DevIconComponent;
       return <IconComponent size={20} />;
     }
     
     // FontAwesome ise
-    return <FontAwesomeIcon icon={icon} />;
+    return <FontAwesomeIcon icon={icon as IconDefinition} />;
   };
+
+  const hasSelectedIcon = Boolean(value) && (value.startsWith('custom:') || Boolean(allIcons[value]));
   
   return (
     <div className="icon-picker">
       <label>{label}</label>
       
       <div className="icon-picker-display" onClick={() => setIsOpen(!isOpen)}>
-        {value && allIcons[value] ? (
+        {hasSelectedIcon ? (
           <div className="selected-icon">
             {renderIcon(value)}
             <span>{value}</span>
@@ -267,7 +286,9 @@ const IconPicker = ({ value, onChange, label = 'Icon Seç', allowCustomUpload = 
           </div>
           
           <div className="icon-picker-grid">
-            {filteredIcons.length === 0 ? (
+            {!iconsLoaded && iconsLoading ? (
+              <div className="no-icons">İkonlar yükleniyor...</div>
+            ) : filteredIcons.length === 0 ? (
               <div className="no-icons">Icon bulunamadı</div>
             ) : (
               filteredIcons.map((iconName) => (

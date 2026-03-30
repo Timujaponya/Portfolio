@@ -3,7 +3,7 @@
 const Profile = require("../models/Profile");
 
 exports.getProfile = async () => {
-    return await Profile.findOne();
+    return await Profile.findOne().lean();
 };
 
 exports.createProfile = async (data) => {

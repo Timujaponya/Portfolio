@@ -25,15 +25,11 @@ exports.createProfile = async (req, res, next) => {
 // PUT /api/profile/:id
 exports.updateProfile = async (req, res, next) => {
     try {
-        console.log('Received profile update request with body:', req.body);
-        console.log('TechStack in request:', req.body.techStack);
-        
         const profile = await profileService.updateProfile(req.params.id, req.body);
         if (!profile) {
             return res.status(404).json({ message: "Profile not found" });
         }
-        
-        console.log('Updated profile techStack:', profile.techStack);
+
         res.status(200).json({ message: "Profile updated", profile });
     } catch (err) {
         next(err);

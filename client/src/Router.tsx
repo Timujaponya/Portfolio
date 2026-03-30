@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import App from './App';
-import AdminPanel from './AdminPanel';
 import './Router.css';
+
+const AdminPanel = lazy(() => import('./AdminPanel'));
 
 // Environment variable'dan admin path al
 const SECRET_ADMIN_PATH = import.meta.env.VITE_ADMIN_PATH || '/secret-admin-panel-xyz123';
@@ -19,7 +20,13 @@ export const Router = () => {
 
   return (
     <div>
-      {currentRoute === 'home' ? <App /> : <AdminPanel />}
+      {currentRoute === 'home' ? (
+        <App />
+      ) : (
+        <Suspense fallback={<div style={{ padding: '2rem', color: '#e5e5e5' }}>Yukleniyor...</div>}>
+          <AdminPanel />
+        </Suspense>
+      )}
     </div>
   );
 };

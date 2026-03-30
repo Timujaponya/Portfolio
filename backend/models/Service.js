@@ -26,6 +26,8 @@ serviceSchema.pre("findOneAndUpdate", function(next) {
     next();
 });
 
+serviceSchema.index({ isActive: 1, order: 1 });
+
 const Service = mongoose.model("Service", serviceSchema);
 
 module.exports = Service;

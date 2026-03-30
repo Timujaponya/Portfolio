@@ -4,10 +4,14 @@
 const projectRepository = require("../repositories/projectRepository");
 const { getUserRepositories } = require("../utils/githubApi");
 
-async function getProjects(){
+async function getPublicProjects() {
+    return await projectRepository.getActiveProjects();
+}
+
+async function getAdminProjects(){
     try {
         const [dbProjects, githubRepositories] = await Promise.all([
-            projectRepository.getAllProjects(),
+            projectRepository.getAllProjectsForAdmin(),
             getUserRepositories("Timujaponya").catch(err => {
                 console.error("GitHub API Error:", err.message);
                 return []; // GitHub hatası durumunda boş array döndür
@@ -15,9 +19,9 @@ async function getProjects(){
         ]);
         return {dbProjects, githubRepositories};
     } catch (error) {
-        console.error("Error in getProjects:", error);
+        console.error("Error in getAdminProjects:", error);
         // En azından DB projelerini döndür
-        const dbProjects = await projectRepository.getAllProjects();
+        const dbProjects = await projectRepository.getAllProjectsForAdmin();
         return {dbProjects, githubRepositories: []};
     }
 }
@@ -43,4 +47,4 @@ async function deleteProject(id){
 }
 
 
-module.exports = {getProjectById, getProjects, createProject, updateProject, deleteProject}
+module.exports = {getProjectById, getPublicProjects, getAdminProjects, createProject, updateProject, deleteProject}
