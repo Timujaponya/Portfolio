@@ -132,9 +132,12 @@ const ProfileEditor = ({ profile, onSave }: ProfileEditorProps) => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
+    const result = await onSave(formData);
+    if (!result) {
+      alert('Profil kaydedilemedi!');
+    }
   };
 
   const addTech = () => {
@@ -251,9 +254,22 @@ const ProfileEditor = ({ profile, onSave }: ProfileEditorProps) => {
             </div>
             {formData.avatarUrl && (
               <div className="file-preview avatar-preview">
-                <img src={formData.avatarUrl} alt="Avatar Preview" className="avatar-preview-img" />
+                <img
+                  src={
+                    formData.avatarUrl.startsWith('http')
+                      ? formData.avatarUrl
+                      : `${window.location.origin}${formData.avatarUrl}`
+                  }
+                  alt="Avatar Preview"
+                  className="avatar-preview-img"
+                />
                 <div className="preview-actions">
-                  <a href={formData.avatarUrl} target="_blank" rel="noopener noreferrer" className="view-file-btn">
+                  <a
+                    href={formData.avatarUrl.startsWith('http') ? formData.avatarUrl : `${window.location.origin}${formData.avatarUrl}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="view-file-btn"
+                  >
                     Görüntüle
                   </a>
                   <button
