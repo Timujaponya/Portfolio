@@ -31,6 +31,30 @@ const EMPTY_PROFILE: Profile = {
   techStack: [],
 };
 
+const getFileExtension = (fileName: string) => {
+  const extension = fileName.split('.').pop();
+  return extension ? `.${extension.toLowerCase()}` : '';
+};
+
+const isImageFile = (file: File) => {
+  const imageExtensions = new Set(['.jpeg', '.jpg', '.png', '.gif', '.webp', '.svg']);
+  return file.type.startsWith('image/') || imageExtensions.has(getFileExtension(file.name));
+};
+
+const isPdfFile = (file: File) => file.type === 'application/pdf' || getFileExtension(file.name) === '.pdf';
+
+const getErrorMessageFromResponse = async (res: Response) => {
+  const contentType = res.headers.get('content-type') || '';
+
+  if (contentType.includes('application/json')) {
+    const data = await res.json();
+    return data?.message || `İstek başarısız (${res.status})`;
+  }
+
+  const text = await res.text();
+  return text || `İstek başarısız (${res.status})`;
+};
+
 const ProfileEditor = ({ profile, onSave }: ProfileEditorProps) => {
   const [formData, setFormData] = useState<Profile>(profile || EMPTY_PROFILE);
   const [uploadingCV, setUploadingCV] = useState(false);
@@ -66,7 +90,7 @@ const ProfileEditor = ({ profile, onSave }: ProfileEditorProps) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
+    if (!isImageFile(file)) {
       alert('Lütfen sadece resim dosyası yükleyin!');
       return;
     }
@@ -86,11 +110,12 @@ const ProfileEditor = ({ profile, onSave }: ProfileEditorProps) => {
         body: formDataUpload,
       });
 
-      const data = await res.json();
+      const data = res.ok ? await res.json() : null;
       if (res.ok) {
         setFormData({ ...formData, avatarUrl: data.url });
       } else {
-        alert(`Avatar yükleme başarısız: ${data.message}`);
+        const message = await getErrorMessageFromResponse(res);
+        alert(`Avatar yükleme başarısız: ${message}`);
       }
     } catch (err) {
       console.error('Avatar upload error:', err);
@@ -104,7 +129,7 @@ const ProfileEditor = ({ profile, onSave }: ProfileEditorProps) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.type !== 'application/pdf') {
+    if (!isPdfFile(file)) {
       alert('Lütfen sadece PDF dosyası yükleyin!');
       return;
     }
@@ -119,11 +144,12 @@ const ProfileEditor = ({ profile, onSave }: ProfileEditorProps) => {
         body: formDataUpload,
       });
 
-      const data = await res.json();
+      const data = res.ok ? await res.json() : null;
       if (res.ok) {
         setFormData({ ...formData, cvUrl: data.url });
       } else {
-        alert(`CV yükleme başarısız: ${data.message}`);
+        const message = await getErrorMessageFromResponse(res);
+        alert(`CV yükleme başarısız: ${message}`);
       }
     } catch (err) {
       console.error('CV upload error:', err);
