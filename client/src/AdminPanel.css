@@ -112,23 +112,12 @@
   padding: 0.85rem 1rem;
 }
 
-.notification {
+.admin-feedback-toast {
   position: fixed;
   top: 1rem;
   right: 1rem;
   z-index: 999;
-  border-radius: 0.6rem;
-  color: #ffffff;
-  padding: 0.85rem 1rem;
-  box-shadow: 0 8px 20px rgba(2, 6, 23, 0.16);
-}
-
-.notification.success {
-  background: linear-gradient(135deg, #16a34a, #15803d);
-}
-
-.notification.error {
-  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  width: min(92vw, 420px);
 }
 
 .admin-header {

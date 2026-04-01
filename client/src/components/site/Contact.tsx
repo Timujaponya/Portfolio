@@ -1,7 +1,8 @@
-import { Mail, MapPin, Phone, Send } from 'lucide-react'
-import { motion } from 'motion/react'
+import { LoaderCircle, Mail, MapPin, Phone, Send } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
 import { useState, type FormEvent } from 'react'
 import type { Profile } from '../../types/portfolio'
+import { FeedbackCard } from '../common/FeedbackCard'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
 
@@ -176,21 +177,29 @@ export function Contact({ profile }: ContactProps) {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-sky-600 px-7 py-3 font-semibold text-white transition hover:bg-sky-700"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-sky-600 px-7 py-3 font-semibold text-white transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:bg-slate-400"
             >
               {isSubmitting ? 'Sending...' : 'Send Message'}
-              <Send size={17} />
+              {isSubmitting ? <LoaderCircle size={17} className="animate-spin" /> : <Send size={17} />}
             </button>
 
-            {submitResult && (
-              <p
-                className={`text-sm ${submitResult.type === 'success' ? 'text-emerald-700' : 'text-rose-700'}`}
-                role="status"
-                aria-live="polite"
-              >
-                {submitResult.message}
-              </p>
-            )}
+            <AnimatePresence mode="wait">
+              {submitResult && (
+                <motion.div
+                  key={submitResult.type + submitResult.message}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.25 }}
+                >
+                  <FeedbackCard
+                    tone={submitResult.type}
+                    title={submitResult.type === 'success' ? 'Mesaj gonderildi' : 'Mesaj gonderilemedi'}
+                    message={submitResult.message}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.form>
         </div>
       </div>

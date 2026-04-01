@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
 import './AdminPanel.css';
 import ProfileEditor from './admin/components/ProfileEditor';
 import ProjectsManager from './admin/components/ProjectsManager';
 import ServicesManager from './admin/components/ServicesManager';
 import { useAdminData } from './admin/hooks/useAdminData';
 import type { AdminTab, NotificationState, Project, Service } from './admin/types';
+import { FeedbackCard } from './components/common/FeedbackCard';
 
 export const AdminPanel = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -90,10 +92,34 @@ export const AdminPanel = () => {
 
   const handleSaveProfile = saveProfile;
 
+  const notificationTone = notification?.type === 'success' ? 'success' : 'error';
+
+  const notificationElement = (
+    <AnimatePresence>
+      {notification ? (
+        <motion.div
+          key={`${notification.type}-${notification.message}`}
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
+          className="admin-feedback-toast"
+        >
+          <FeedbackCard
+            tone={notificationTone}
+            title={notification.type === 'success' ? 'Basarili' : 'Hata'}
+            message={notification.message}
+            className="shadow-lg"
+          />
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
+  );
+
   if (!isAuthenticated) {
     return (
       <div className="admin-panel">
-        {notification && <div className={`notification ${notification.type}`}>{notification.message}</div>}
+        {notificationElement}
 
         <div className="login-container">
           <div className="login-box">
@@ -120,7 +146,7 @@ export const AdminPanel = () => {
 
   return (
     <div className="admin-panel">
-      {notification && <div className={`notification ${notification.type}`}>{notification.message}</div>}
+      {notificationElement}
 
       <div className="admin-header">
         <div className="header-content">

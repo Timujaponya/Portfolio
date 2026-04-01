@@ -1,5 +1,6 @@
 import { motion } from 'motion/react'
 import type { Profile, Service } from '../../types/portfolio'
+import { FeedbackCard } from '../common/FeedbackCard'
 
 interface SkillsProps {
   profile: Profile | null
@@ -45,7 +46,7 @@ export function Skills({ profile, services }: SkillsProps) {
                   </span>
                 ))
               ) : (
-                <p className="text-slate-500">Henüz tech stack bilgisi bulunmuyor.</p>
+                <FeedbackCard tone="info" title="Tech Stack" message="Henüz tech stack bilgisi bulunmuyor." className="w-full" compact />
               )}
             </div>
           </motion.div>
@@ -67,7 +68,7 @@ export function Skills({ profile, services }: SkillsProps) {
                   </article>
                 ))
               ) : (
-                <p className="text-slate-500">Henüz service bilgisi bulunmuyor.</p>
+                <FeedbackCard tone="info" title="Service Focus" message="Henüz service bilgisi bulunmuyor." compact />
               )}
             </div>
           </motion.div>
