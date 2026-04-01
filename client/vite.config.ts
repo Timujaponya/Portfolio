@@ -7,6 +7,8 @@ const runtimeEnv = (globalThis as { process?: { env?: Record<string, string | un
 const previewAllowedHosts = [
   'localhost',
   '127.0.0.1',
+  'timucin.site',
+  'www.timucin.site',
   runtimeEnv.RAILWAY_PUBLIC_DOMAIN,
   runtimeEnv.CLIENT_PUBLIC_DOMAIN,
   'client-production-arda.up.railway.app',
