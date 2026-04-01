@@ -21,6 +21,21 @@ function parseCorsOrigins(origins) {
     return parsed.length ? parsed : defaultCorsOrigins;
 }
 
+function normalizePublicBaseUrl(value) {
+    const raw = (value || "").trim().replace(/\/+$/, "");
+    if (!raw) return "";
+
+    if (/^https?:\/\//i.test(raw)) {
+        return raw;
+    }
+
+    if (raw.startsWith("localhost") || raw.startsWith("127.0.0.1")) {
+        return `http://${raw}`;
+    }
+
+    return `https://${raw}`;
+}
+
 module.exports = {
     githubToken:process.env.GITHUB_TOKEN,
     port:process.env.PORT || 3000,
@@ -28,5 +43,5 @@ module.exports = {
     nodeEnv:process.env.NODE_ENV || "development",
     corsOrigins:parseCorsOrigins(process.env.CORS_ORIGINS),
     uploadDir: process.env.UPLOAD_DIR || path.join(__dirname, "..", "uploads"),
-    publicBaseUrl: (process.env.PUBLIC_BASE_URL || "").replace(/\/+$/, "")
+    publicBaseUrl: normalizePublicBaseUrl(process.env.PUBLIC_BASE_URL)
 }

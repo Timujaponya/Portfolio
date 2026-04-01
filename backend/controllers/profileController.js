@@ -1,6 +1,7 @@
 // Profil controller
 
 const profileService = require("../services/profileService");
+const { publicBaseUrl } = require("../config/env.js");
 
 function getFirstHeaderValue(value) {
     if (!value) return "";
@@ -9,9 +10,8 @@ function getFirstHeaderValue(value) {
 }
 
 function getPublicBaseUrl(req) {
-    const envBaseUrl = process.env.PUBLIC_BASE_URL?.replace(/\/+$/, "");
-    if (envBaseUrl) {
-        return envBaseUrl;
+    if (publicBaseUrl) {
+        return publicBaseUrl;
     }
 
     const forwardedProto = getFirstHeaderValue(req.headers["x-forwarded-proto"]);
