@@ -14,6 +14,12 @@ export function Skills({ profile, services }: SkillsProps) {
   const { t } = useLanguage()
   const techStack = profile?.techStack || []
 
+  const navigateToService = (id: string) => {
+    const targetPath = `/services/${encodeURIComponent(id)}`
+    window.history.pushState({}, '', targetPath)
+    window.dispatchEvent(new PopStateEvent('popstate'))
+  }
+
   return (
     <section id="skills" className="bg-gradient-to-br from-sky-50 via-white to-indigo-50 py-20">
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -74,6 +80,13 @@ export function Skills({ profile, services }: SkillsProps) {
                     <p className="mt-1 text-sm text-slate-600">
                       <DynamicText text={service.description} fallback={service.description} />
                     </p>
+                    <button
+                      type="button"
+                      onClick={() => navigateToService(service._id)}
+                      className="mt-3 inline-flex rounded-lg border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700 transition hover:border-sky-300 hover:bg-sky-100"
+                    >
+                      {t('skills.viewDetails')}
+                    </button>
                   </article>
                 ))
               ) : (

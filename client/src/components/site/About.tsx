@@ -96,7 +96,7 @@ export function About({ profile, projectCount, serviceCount }: AboutProps) {
               <p className="text-sm text-sky-100">{t('about.stats.stack')}</p>
             </div>
             <div>
-              <p className="text-4xl font-black">24h</p>
+              <p className="text-4xl font-black">12h</p>
               <p className="text-sm text-sky-100">{t('about.stats.response')}</p>
             </div>
           </div>
