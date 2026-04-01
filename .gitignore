@@ -8,8 +8,9 @@ node_modules/
 **/.env
 
 # Uploads
-backend/uploads/
 backend/uploads/**
+!backend/uploads/
+!backend/uploads/.gitkeep
 
 # Build outputs
 dist/

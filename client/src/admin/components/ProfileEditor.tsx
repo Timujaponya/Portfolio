@@ -112,7 +112,7 @@ const ProfileEditor = ({ profile, onSave }: ProfileEditorProps) => {
 
       const data = res.ok ? await res.json() : null;
       if (res.ok) {
-        setFormData({ ...formData, avatarUrl: data.url });
+        setFormData({ ...formData, avatarUrl: resolveMediaUrl(data.url) });
       } else {
         const message = await getErrorMessageFromResponse(res);
         alert(`Avatar yükleme başarısız: ${message}`);
@@ -146,7 +146,7 @@ const ProfileEditor = ({ profile, onSave }: ProfileEditorProps) => {
 
       const data = res.ok ? await res.json() : null;
       if (res.ok) {
-        setFormData({ ...formData, cvUrl: data.url });
+        setFormData({ ...formData, cvUrl: resolveMediaUrl(data.url) });
       } else {
         const message = await getErrorMessageFromResponse(res);
         alert(`CV yükleme başarısız: ${message}`);
@@ -275,7 +275,7 @@ const ProfileEditor = ({ profile, onSave }: ProfileEditorProps) => {
               </label>
               <span className="upload-divider">veya</span>
               <input
-                type="url"
+                type="text"
                 placeholder="Avatar URL girin"
                 value={formData.avatarUrl || ''}
                 onChange={(e) => setFormData({ ...formData, avatarUrl: e.target.value })}
@@ -332,7 +332,7 @@ const ProfileEditor = ({ profile, onSave }: ProfileEditorProps) => {
               </label>
               <span className="upload-divider">veya</span>
               <input
-                type="url"
+                type="text"
                 placeholder="CV linki girin (örn: https://...)"
                 value={formData.cvUrl || ''}
                 onChange={(e) => setFormData({ ...formData, cvUrl: e.target.value })}

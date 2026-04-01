@@ -5,13 +5,19 @@ const fs = require('fs');
 const path = require('path');
 const { publicBaseUrl, uploadDir } = require('../config/env.js');
 
+function getFirstHeaderValue(value) {
+  if (!value) return '';
+  if (Array.isArray(value)) return String(value[0] || '').trim();
+  return String(value).split(',')[0].trim();
+}
+
 function getPublicBaseUrl(req) {
   if (publicBaseUrl) {
     return publicBaseUrl;
   }
 
-  const forwardedProto = req.headers['x-forwarded-proto'];
-  const forwardedHost = req.headers['x-forwarded-host'];
+  const forwardedProto = getFirstHeaderValue(req.headers['x-forwarded-proto']);
+  const forwardedHost = getFirstHeaderValue(req.headers['x-forwarded-host']);
 
   if (forwardedProto && forwardedHost) {
     return `${forwardedProto}://${forwardedHost}`;
