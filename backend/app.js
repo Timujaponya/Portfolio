@@ -7,6 +7,7 @@ const profileRouter = require("./routes/profile.js");
 const servicesRouter = require("./routes/services.js");
 const uploadRouter = require("./routes/upload.js");
 const contactRouter = require("./routes/contact.js");
+const translateRouter = require("./routes/translate.js");
 const cors = require("cors");
 const { corsOrigins, uploadDir } = require("./config/env.js");
 
@@ -42,6 +43,7 @@ app.use("/api/profile", profileRouter); // profileRouter
 app.use("/api/services", servicesRouter); // servicesRouter
 app.use("/api/upload", uploadRouter); // uploadRouter
 app.use("/api/contact", contactRouter); // contactRouter
+app.use("/api/translate", translateRouter); // translateRouter
 app.use(errorHandler); // Error Handler middleware
 
 module.exports = app;

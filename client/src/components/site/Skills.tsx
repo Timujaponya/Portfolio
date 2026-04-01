@@ -1,6 +1,8 @@
 import { motion } from 'motion/react'
 import type { Profile, Service } from '../../types/portfolio'
 import { FeedbackCard } from '../common/FeedbackCard'
+import { DynamicText } from '../common/DynamicText'
+import { useLanguage } from '../../i18n/LanguageContext'
 
 interface SkillsProps {
   profile: Profile | null
@@ -8,6 +10,7 @@ interface SkillsProps {
 }
 
 export function Skills({ profile, services }: SkillsProps) {
+  const { t } = useLanguage()
   const techStack = profile?.techStack || []
 
   return (
@@ -20,9 +23,9 @@ export function Skills({ profile, services }: SkillsProps) {
           viewport={{ once: true }}
           className="mb-14 text-center"
         >
-          <h2 className="mb-4 text-4xl font-black text-slate-900 sm:text-5xl">Skills and Services</h2>
+          <h2 className="mb-4 text-4xl font-black text-slate-900 sm:text-5xl">{t('skills.title')}</h2>
           <p className="mx-auto max-w-3xl text-lg text-slate-600">
-            Güncel teknoloji stack ve sunduğum servis alanlarını tek bir görünümde topladım.
+            {t('skills.subtitle')}
           </p>
         </motion.div>
 
@@ -34,7 +37,7 @@ export function Skills({ profile, services }: SkillsProps) {
             viewport={{ once: true }}
             className="rounded-2xl bg-white p-8 shadow-lg shadow-slate-100"
           >
-            <h3 className="mb-6 text-2xl font-bold text-slate-900">Tech Stack</h3>
+            <h3 className="mb-6 text-2xl font-bold text-slate-900">{t('skills.techStack')}</h3>
             <div className="flex flex-wrap gap-3">
               {techStack.length ? (
                 techStack.map((tech) => (
@@ -42,11 +45,11 @@ export function Skills({ profile, services }: SkillsProps) {
                     key={`${tech.name}-${tech.icon || 'default'}`}
                     className="rounded-full border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-semibold text-sky-700"
                   >
-                    {tech.name}
+                    <DynamicText text={tech.name} fallback={tech.name} />
                   </span>
                 ))
               ) : (
-                <FeedbackCard tone="info" title="Tech Stack" message="Henüz tech stack bilgisi bulunmuyor." className="w-full" compact />
+                <FeedbackCard tone="info" title={t('skills.techStack')} message={t('skills.empty.tech')} className="w-full" compact />
               )}
             </div>
           </motion.div>
@@ -58,17 +61,21 @@ export function Skills({ profile, services }: SkillsProps) {
             viewport={{ once: true }}
             className="rounded-2xl bg-white p-8 shadow-lg shadow-slate-100"
           >
-            <h3 className="mb-6 text-2xl font-bold text-slate-900">Service Focus</h3>
+            <h3 className="mb-6 text-2xl font-bold text-slate-900">{t('skills.serviceFocus')}</h3>
             <div className="space-y-4">
               {services.length ? (
                 services.map((service) => (
                   <article key={service._id} className="rounded-xl border border-slate-200 p-4">
-                    <p className="font-bold text-slate-900">{service.title}</p>
-                    <p className="mt-1 text-sm text-slate-600">{service.description}</p>
+                    <p className="font-bold text-slate-900">
+                      <DynamicText text={service.title} fallback={service.title} />
+                    </p>
+                    <p className="mt-1 text-sm text-slate-600">
+                      <DynamicText text={service.description} fallback={service.description} />
+                    </p>
                   </article>
                 ))
               ) : (
-                <FeedbackCard tone="info" title="Service Focus" message="Henüz service bilgisi bulunmuyor." compact />
+                <FeedbackCard tone="info" title={t('skills.serviceFocus')} message={t('skills.empty.service')} compact />
               )}
             </div>
           </motion.div>

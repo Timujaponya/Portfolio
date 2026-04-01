@@ -1,6 +1,8 @@
 import { Code2, Locate, Rocket, Sparkles } from 'lucide-react'
 import { motion } from 'motion/react'
 import type { Profile } from '../../types/portfolio'
+import { useLanguage } from '../../i18n/LanguageContext'
+import { DynamicText } from '../common/DynamicText'
 
 interface AboutProps {
   profile: Profile | null
@@ -9,26 +11,32 @@ interface AboutProps {
 }
 
 export function About({ profile, projectCount, serviceCount }: AboutProps) {
+  const { t, language } = useLanguage()
+
   const cards = [
     {
       icon: Code2,
-      title: 'Software Development',
-      description: 'Modern web stack ile yüksek performanslı ürünler geliştiriyorum.',
+      title: t('about.card.software.title'),
+      description: t('about.card.software.desc'),
     },
     {
       icon: Rocket,
-      title: 'Product Focus',
-      description: 'Sadece kod değil, kullanıcıya değer üreten çözüm inşa etmeye odaklanıyorum.',
+      title: t('about.card.product.title'),
+      description: t('about.card.product.desc'),
     },
     {
       icon: Sparkles,
-      title: 'Clean UI/UX',
-      description: 'Net görsel hiyerarşi, güçlü etkileşim ve okunabilir deneyim sunuyorum.',
+      title: t('about.card.ui.title'),
+      description: t('about.card.ui.desc'),
     },
     {
       icon: Locate,
-      title: 'Remote Collaboration',
-      description: profile?.location ? `${profile.location} merkezli, global projelere açık.` : 'Uzaktan ve hibrit çalışma düzenine uyumluyum.',
+      title: t('about.card.remote.title'),
+      description: profile?.location
+        ? language === 'tr'
+          ? `${profile.location} merkezli, global projelere acigim.`
+          : `Based in ${profile.location}, open to global projects.`
+        : t('about.card.remote.desc'),
     },
   ]
 
@@ -42,8 +50,10 @@ export function About({ profile, projectCount, serviceCount }: AboutProps) {
           viewport={{ once: true }}
           className="mb-14 text-center"
         >
-          <h2 className="mb-4 text-4xl font-black text-slate-900 sm:text-5xl">About Me</h2>
-          <p className="mx-auto max-w-3xl text-lg text-slate-600">{profile?.bio || 'Yazılım geliştirme yolculuğumda temiz mimari, sürdürülebilir kod ve iyi kullanıcı deneyimi arasında denge kuruyorum.'}</p>
+          <h2 className="mb-4 text-4xl font-black text-slate-900 sm:text-5xl">{t('about.title')}</h2>
+          <p className="mx-auto max-w-3xl text-lg text-slate-600">
+            <DynamicText text={profile?.bio} fallback={t('about.defaultBio')} />
+          </p>
         </motion.div>
 
         <div className="mb-16 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -75,19 +85,19 @@ export function About({ profile, projectCount, serviceCount }: AboutProps) {
           <div className="grid grid-cols-2 gap-8 text-center sm:grid-cols-4">
             <div>
               <p className="text-4xl font-black">{projectCount}+</p>
-              <p className="text-sm text-sky-100">Active Projects</p>
+              <p className="text-sm text-sky-100">{t('about.stats.projects')}</p>
             </div>
             <div>
               <p className="text-4xl font-black">{serviceCount}+</p>
-              <p className="text-sm text-sky-100">Service Areas</p>
+              <p className="text-sm text-sky-100">{t('about.stats.services')}</p>
             </div>
             <div>
               <p className="text-4xl font-black">{profile?.techStack?.length || 0}+</p>
-              <p className="text-sm text-sky-100">Tech Stack</p>
+              <p className="text-sm text-sky-100">{t('about.stats.stack')}</p>
             </div>
             <div>
               <p className="text-4xl font-black">24h</p>
-              <p className="text-sm text-sky-100">Average Response</p>
+              <p className="text-sm text-sky-100">{t('about.stats.response')}</p>
             </div>
           </div>
         </motion.div>

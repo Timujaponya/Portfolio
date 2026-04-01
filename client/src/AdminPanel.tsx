@@ -7,8 +7,12 @@ import ServicesManager from './admin/components/ServicesManager';
 import { useAdminData } from './admin/hooks/useAdminData';
 import type { AdminTab, NotificationState, Project, Service } from './admin/types';
 import { FeedbackCard } from './components/common/FeedbackCard';
+import { useLanguage } from './i18n/LanguageContext';
+import { LanguageToggle } from './components/common/LanguageToggle';
+import { DynamicText } from './components/common/DynamicText';
 
 export const AdminPanel = () => {
+  const { t } = useLanguage();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [activeTab, setActiveTab] = useState<AdminTab>('profile');
@@ -107,8 +111,8 @@ export const AdminPanel = () => {
         >
           <FeedbackCard
             tone={notificationTone}
-            title={notification.type === 'success' ? 'Basarili' : 'Hata'}
-            message={notification.message}
+            title={notification.type === 'success' ? t('feedback.success') : t('feedback.error')}
+            message={<DynamicText text={notification.message} fallback={notification.message} />}
             className="shadow-lg"
           />
         </motion.div>
@@ -123,19 +127,22 @@ export const AdminPanel = () => {
 
         <div className="login-container">
           <div className="login-box">
-            <h1>Admin Girişi</h1>
-            <p>Admin paneline erişim için şifre gereklidir</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
+              <h1 style={{ marginBottom: 0 }}>{t('admin.login.title')}</h1>
+              <LanguageToggle />
+            </div>
+            <p>{t('admin.login.desc')}</p>
             <form onSubmit={handleLogin}>
               <input
                 type="password"
-                placeholder="Şifre"
+                placeholder={t('admin.login.passwordPlaceholder')}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="login-input"
                 autoFocus
               />
               <button type="submit" className="login-button">
-                Giriş Yap
+                {t('admin.login.submit')}
               </button>
             </form>
           </div>
@@ -150,25 +157,26 @@ export const AdminPanel = () => {
 
       <div className="admin-header">
         <div className="header-content">
-          <h1>Admin Panel</h1>
+          <h1>{t('admin.header.title')}</h1>
           <div className="header-buttons">
+            <LanguageToggle />
             <button onClick={() => (window.location.href = '/')} className="home-button">
-              Ana Sayfa
+              {t('admin.header.home')}
             </button>
             <button onClick={handleLogout} className="logout-button">
-              Çıkış Yap
+              {t('admin.header.logout')}
             </button>
           </div>
         </div>
         <div className="admin-tabs">
           <button className={activeTab === 'profile' ? 'active' : ''} onClick={() => setActiveTab('profile')}>
-            Profil
+            {t('admin.tabs.profile')}
           </button>
           <button className={activeTab === 'projects' ? 'active' : ''} onClick={() => setActiveTab('projects')}>
-            Projeler ({projects.length})
+            {t('admin.tabs.projects')} ({projects.length})
           </button>
           <button className={activeTab === 'services' ? 'active' : ''} onClick={() => setActiveTab('services')}>
-            Servisler ({services.length})
+            {t('admin.tabs.services')} ({services.length})
           </button>
         </div>
       </div>

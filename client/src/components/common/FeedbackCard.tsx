@@ -5,8 +5,8 @@ export type FeedbackTone = 'success' | 'error' | 'info' | 'warning'
 
 interface FeedbackCardProps {
   tone?: FeedbackTone
-  title?: string
-  message: string
+  title?: ReactNode
+  message: ReactNode
   className?: string
   compact?: boolean
   icon?: ReactNode

@@ -2,6 +2,8 @@ import { Download, Github, Globe, Linkedin, Mail, Twitter } from 'lucide-react'
 import { motion } from 'motion/react'
 import type { Profile } from '../../types/portfolio'
 import { resolveMediaUrl } from '../../utils/mediaUrl'
+import { useLanguage } from '../../i18n/LanguageContext'
+import { DynamicText } from '../common/DynamicText'
 
 interface HeroProps {
   profile: Profile | null
@@ -11,6 +13,7 @@ export function Hero({ profile }: HeroProps) {
   const social = profile?.socialLinks
   const avatarUrl = resolveMediaUrl(profile?.avatarUrl)
   const cvUrl = resolveMediaUrl(profile?.cvUrl)
+  const { t } = useLanguage()
 
   return (
     <section
@@ -24,17 +27,19 @@ export function Hero({ profile }: HeroProps) {
           transition={{ duration: 0.7 }}
         >
           <p className="mb-3 inline-flex rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-sky-700">
-            Software Developer
+            {t('hero.badge')}
           </p>
           <h1 className="mb-6 text-5xl font-black leading-tight text-slate-900 sm:text-6xl lg:text-7xl">
-            Hi, I'm{' '}
+            {t('hero.greeting')}{' '}
             <span className="bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent">
-              {profile?.name || 'Timuçin'}
+              <DynamicText text={profile?.name} fallback={t('hero.defaultName')} />
             </span>
           </h1>
-          <p className="mb-2 text-xl text-slate-700 sm:text-2xl">{profile?.title || 'Full Stack Developer'}</p>
+          <p className="mb-2 text-xl text-slate-700 sm:text-2xl">
+            <DynamicText text={profile?.title} fallback={t('hero.defaultTitle')} />
+          </p>
           <p className="mb-8 max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">
-            {profile?.bio || 'Scalable web experiences ve güçlü ürünler geliştiriyorum. Oyun geliştirme vizyonumu da kod kalitesi ile birleştiriyorum.'}
+            <DynamicText text={profile?.bio} fallback={t('hero.defaultBio')} />
           </p>
 
           <div className="mb-8 flex flex-wrap gap-4">
@@ -44,7 +49,7 @@ export function Hero({ profile }: HeroProps) {
               whileTap={{ scale: 0.96 }}
               className="inline-flex items-center gap-2 rounded-lg bg-sky-600 px-7 py-3 font-semibold text-white shadow-lg shadow-sky-200 transition-colors hover:bg-sky-700"
             >
-              Get in Touch
+              {t('hero.ctaContact')}
               <Mail size={18} />
             </motion.a>
             {cvUrl && (
@@ -56,7 +61,7 @@ export function Hero({ profile }: HeroProps) {
                 whileTap={{ scale: 0.96 }}
                 className="inline-flex items-center gap-2 rounded-lg border-2 border-sky-600 px-7 py-3 font-semibold text-sky-700 transition-colors hover:bg-sky-50"
               >
-                Download CV
+                {t('hero.ctaCv')}
                 <Download size={18} />
               </motion.a>
             )}

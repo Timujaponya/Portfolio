@@ -3,6 +3,8 @@ import { AnimatePresence, motion } from 'motion/react'
 import { useState, type FormEvent } from 'react'
 import type { Profile } from '../../types/portfolio'
 import { FeedbackCard } from '../common/FeedbackCard'
+import { useLanguage } from '../../i18n/LanguageContext'
+import { DynamicText } from '../common/DynamicText'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
 
@@ -11,6 +13,7 @@ interface ContactProps {
 }
 
 export function Contact({ profile }: ContactProps) {
+  const { t } = useLanguage()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -43,21 +46,21 @@ export function Contact({ profile }: ContactProps) {
       if (!res.ok) {
         setSubmitResult({
           type: 'error',
-          message: payload?.message || 'Mesaj gonderilemedi. Lutfen tekrar deneyin.',
+          message: payload?.message || t('contact.error.default'),
         })
         return
       }
 
       setSubmitResult({
         type: 'success',
-        message: payload?.message || 'Mesajiniz alindi. En kisa surede donus yapacagim.',
+        message: payload?.message || t('contact.success.default'),
       })
       setFormData({ name: '', email: '', subject: '', message: '' })
     } catch (error) {
       console.error('Contact form submit error:', error)
       setSubmitResult({
         type: 'error',
-        message: 'Baglanti hatasi olustu. Lutfen daha sonra tekrar deneyin.',
+        message: t('contact.error.network'),
       })
     } finally {
       setIsSubmitting(false)
@@ -74,9 +77,9 @@ export function Contact({ profile }: ContactProps) {
           viewport={{ once: true }}
           className="mb-14 text-center"
         >
-          <h2 className="mb-4 text-4xl font-black text-slate-900 sm:text-5xl">Get In Touch</h2>
+          <h2 className="mb-4 text-4xl font-black text-slate-900 sm:text-5xl">{t('contact.title')}</h2>
           <p className="mx-auto max-w-3xl text-lg text-slate-600">
-            Yeni bir urun fikri, mevcut bir projede destek veya freelance is birligi icin iletisime gecebilirsin.
+            {t('contact.subtitle')}
           </p>
         </motion.div>
 
@@ -89,8 +92,8 @@ export function Contact({ profile }: ContactProps) {
             className="space-y-6"
           >
             <div className="rounded-2xl border border-slate-200 bg-white p-6">
-              <h3 className="mb-4 text-2xl font-bold text-slate-900">Contact Information</h3>
-              <p className="text-slate-600">Ortalama 24 saat icinde geri donus yapiyorum.</p>
+              <h3 className="mb-4 text-2xl font-bold text-slate-900">{t('contact.info.title')}</h3>
+              <p className="text-slate-600">{t('contact.info.response')}</p>
             </div>
 
             <div className="space-y-4">
@@ -99,7 +102,7 @@ export function Contact({ profile }: ContactProps) {
                   <Mail size={18} />
                 </div>
                 <div>
-                  <p className="font-bold text-slate-900">Email</p>
+                  <p className="font-bold text-slate-900">{t('contact.info.email')}</p>
                   <a href={`mailto:${profile?.email || ''}`} className="text-slate-600 hover:text-sky-600">
                     {profile?.email || 'mail@example.com'}
                   </a>
@@ -111,9 +114,9 @@ export function Contact({ profile }: ContactProps) {
                   <Phone size={18} />
                 </div>
                 <div>
-                  <p className="font-bold text-slate-900">Phone</p>
+                  <p className="font-bold text-slate-900">{t('contact.info.phone')}</p>
                   <a href={`tel:${profile?.phone || ''}`} className="text-slate-600 hover:text-sky-600">
-                    {profile?.phone || 'Not specified'}
+                    {profile?.phone || t('contact.info.phoneFallback')}
                   </a>
                 </div>
               </div>
@@ -123,8 +126,10 @@ export function Contact({ profile }: ContactProps) {
                   <MapPin size={18} />
                 </div>
                 <div>
-                  <p className="font-bold text-slate-900">Location</p>
-                  <p className="text-slate-600">{profile?.location || 'Remote'}</p>
+                  <p className="font-bold text-slate-900">{t('contact.info.location')}</p>
+                  <p className="text-slate-600">
+                    {profile?.location ? <DynamicText text={profile.location} fallback={profile.location} /> : t('contact.info.locationFallback')}
+                  </p>
                 </div>
               </div>
             </div>
@@ -143,7 +148,7 @@ export function Contact({ profile }: ContactProps) {
               name="name"
               value={formData.name}
               onChange={(event) => setFormData((prev) => ({ ...prev, name: event.target.value }))}
-              placeholder="Your name"
+              placeholder={t('contact.placeholder.name')}
               required
               className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-sky-500"
             />
@@ -152,7 +157,7 @@ export function Contact({ profile }: ContactProps) {
               name="email"
               value={formData.email}
               onChange={(event) => setFormData((prev) => ({ ...prev, email: event.target.value }))}
-              placeholder="Email"
+              placeholder={t('contact.placeholder.email')}
               required
               className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-sky-500"
             />
@@ -161,7 +166,7 @@ export function Contact({ profile }: ContactProps) {
               name="subject"
               value={formData.subject}
               onChange={(event) => setFormData((prev) => ({ ...prev, subject: event.target.value }))}
-              placeholder="Subject"
+              placeholder={t('contact.placeholder.subject')}
               required
               className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-sky-500"
             />
@@ -169,7 +174,7 @@ export function Contact({ profile }: ContactProps) {
               name="message"
               value={formData.message}
               onChange={(event) => setFormData((prev) => ({ ...prev, message: event.target.value }))}
-              placeholder="Message"
+              placeholder={t('contact.placeholder.message')}
               rows={5}
               required
               className="w-full resize-none rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-sky-500"
@@ -179,7 +184,7 @@ export function Contact({ profile }: ContactProps) {
               disabled={isSubmitting}
               className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-sky-600 px-7 py-3 font-semibold text-white transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:bg-slate-400"
             >
-              {isSubmitting ? 'Sending...' : 'Send Message'}
+              {isSubmitting ? t('contact.button.sending') : t('contact.button.send')}
               {isSubmitting ? <LoaderCircle size={17} className="animate-spin" /> : <Send size={17} />}
             </button>
 
@@ -194,8 +199,8 @@ export function Contact({ profile }: ContactProps) {
                 >
                   <FeedbackCard
                     tone={submitResult.type}
-                    title={submitResult.type === 'success' ? 'Mesaj gonderildi' : 'Mesaj gonderilemedi'}
-                    message={submitResult.message}
+                    title={submitResult.type === 'success' ? t('contact.feedback.success') : t('contact.feedback.error')}
+                    message={<DynamicText text={submitResult.message} fallback={submitResult.message} />}
                   />
                 </motion.div>
               )}

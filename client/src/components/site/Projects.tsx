@@ -4,6 +4,8 @@ import { motion } from 'motion/react'
 import type { Project } from '../../types/portfolio'
 import { resolveMediaUrl } from '../../utils/mediaUrl'
 import { FeedbackCard } from '../common/FeedbackCard'
+import { useLanguage } from '../../i18n/LanguageContext'
+import { DynamicText } from '../common/DynamicText'
 
 type FilterType = 'all' | 'web' | 'game' | 'tools'
 
@@ -12,6 +14,7 @@ interface ProjectsProps {
 }
 
 export function Projects({ projects }: ProjectsProps) {
+  const { t } = useLanguage()
   const [activeFilter, setActiveFilter] = useState<FilterType>('all')
 
   const filteredProjects = useMemo(() => {
@@ -31,9 +34,9 @@ export function Projects({ projects }: ProjectsProps) {
           viewport={{ once: true }}
           className="mb-12 text-center"
         >
-          <h2 className="mb-4 text-4xl font-black text-slate-900 sm:text-5xl">Featured Projects</h2>
+          <h2 className="mb-4 text-4xl font-black text-slate-900 sm:text-5xl">{t('projects.title')}</h2>
           <p className="mx-auto mb-8 max-w-3xl text-lg text-slate-600">
-            Ürün odaklı geliştirdiğim projelerden seçkiler.
+            {t('projects.subtitle')}
           </p>
 
           <div className="flex flex-wrap justify-center gap-3">
@@ -47,7 +50,7 @@ export function Projects({ projects }: ProjectsProps) {
                     : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                 }`}
               >
-                {filter === 'all' ? 'All' : filter.toUpperCase()}
+                {filter === 'all' ? t('projects.filter.all') : t(`projects.filter.${filter}`, filter.toUpperCase())}
               </button>
             ))}
           </div>
@@ -57,8 +60,8 @@ export function Projects({ projects }: ProjectsProps) {
           <div className="mx-auto max-w-xl">
             <FeedbackCard
               tone="info"
-              title="Bu filtrede proje yok"
-              message="Farkli bir filtre secerek diger projeleri inceleyebilirsin."
+              title={t('projects.empty.title')}
+              message={t('projects.empty.message')}
             />
           </div>
         ) : (
@@ -103,12 +106,16 @@ export function Projects({ projects }: ProjectsProps) {
                 </div>
 
                 <div className="p-6">
-                  <h3 className="mb-2 text-xl font-bold text-slate-900">{project.title}</h3>
-                  <p className="mb-4 text-sm leading-relaxed text-slate-600">{project.description}</p>
+                  <h3 className="mb-2 text-xl font-bold text-slate-900">
+                    <DynamicText text={project.title} fallback={project.title} />
+                  </h3>
+                  <p className="mb-4 text-sm leading-relaxed text-slate-600">
+                    <DynamicText text={project.description} fallback={project.description} />
+                  </p>
                   <div className="flex flex-wrap gap-2">
                     {project.tags?.map((tag) => (
                       <span key={`${project._id}-${tag}`} className="rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
-                        {tag}
+                        <DynamicText text={tag} fallback={tag} />
                       </span>
                     ))}
                   </div>

@@ -1,16 +1,19 @@
 import { Menu, X } from 'lucide-react'
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
+import { useLanguage } from '../../i18n/LanguageContext'
+import { LanguageToggle } from '../common/LanguageToggle'
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
+  const { t } = useLanguage()
 
   const navItems = [
-    { label: 'Home', href: '#home' },
-    { label: 'About', href: '#about' },
-    { label: 'Skills', href: '#skills' },
-    { label: 'Projects', href: '#projects' },
-    { label: 'Contact', href: '#contact' },
+    { label: t('nav.home'), href: '#home' },
+    { label: t('nav.about'), href: '#about' },
+    { label: t('nav.skills'), href: '#skills' },
+    { label: t('nav.projects'), href: '#projects' },
+    { label: t('nav.contact'), href: '#contact' },
   ]
 
   const scrollToSection = (href: string) => {
@@ -25,7 +28,7 @@ export function Navigation() {
     <nav className="fixed left-0 right-0 top-0 z-50 border-b border-slate-200 bg-white/85 backdrop-blur-md">
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <span className="bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-xl font-bold text-transparent">
-          {'<Timu />'}
+          {t('nav.brand')}
         </span>
 
         <div className="hidden items-center gap-8 md:flex">
@@ -38,12 +41,13 @@ export function Navigation() {
               {item.label}
             </button>
           ))}
+          <LanguageToggle />
         </div>
 
         <button
           onClick={() => setIsOpen((prev) => !prev)}
           className="text-slate-700 transition-colors hover:text-sky-600 md:hidden"
-          aria-label="Toggle menu"
+          aria-label={t('nav.toggleMenu')}
         >
           {isOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
@@ -58,6 +62,9 @@ export function Navigation() {
             className="border-t border-slate-200 bg-white md:hidden"
           >
             <div className="space-y-2 px-4 py-4 sm:px-6">
+              <div className="pb-2">
+                <LanguageToggle />
+              </div>
               {navItems.map((item) => (
                 <button
                   key={item.label}
