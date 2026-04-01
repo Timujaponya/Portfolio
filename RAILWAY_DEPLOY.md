@@ -17,6 +17,9 @@ Bu proje monorepo olduğu icin Railway tarafinda iki ayri servis olusturmaniz ge
        `https://a.up.railway.app,https://b.up.railway.app`
    - `UPLOAD_DIR` = `/data/uploads`
    - `PUBLIC_BASE_URL` = `https://<backend-domain>`
+   - `RESEND_API_KEY` = Resend API key
+   - `CONTACT_FROM_EMAIL` = Resend'de dogrulanmis gonderici email (or: `Portfolio Contact <onboarding@resend.dev>`)
+   - `CONTACT_TO_EMAIL` = Iletisim formlarinin ulasacagi email adresi
 5. Deploy et.
 6. API saglik kontrolu: `https://<backend-domain>/api/health` -> `{ "status": "ok" }`
 
@@ -57,3 +60,4 @@ Client domain belli olduktan sonra backend servisinde `CORS_ORIGINS` degerini ke
 - Admin sifresini frontend'de tutmak guvenli degildir. Uretimde backend tabanli auth (JWT/session) kullan.
 - Bu projede backend icin health endpoint hazir: `/api/health`.
 - Upload dosyalari backend servisinde tutulur; client servisine volume baglamaya gerek yoktur.
+- Iletisim formu endpoint'i: `POST /api/contact`.

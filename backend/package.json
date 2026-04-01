@@ -19,6 +19,7 @@
     "express-cors": "^0.0.3",
     "mongodb": "^6.19.0",
     "mongoose": "^8.18.0",
-    "multer": "^2.0.2"
+    "multer": "^2.0.2",
+    "resend": "^5.0.0"
   }
 }

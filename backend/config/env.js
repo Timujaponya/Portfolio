@@ -43,5 +43,8 @@ module.exports = {
     nodeEnv:process.env.NODE_ENV || "development",
     corsOrigins:parseCorsOrigins(process.env.CORS_ORIGINS),
     uploadDir: process.env.UPLOAD_DIR || path.join(__dirname, "..", "uploads"),
-    publicBaseUrl: normalizePublicBaseUrl(process.env.PUBLIC_BASE_URL)
+    publicBaseUrl: normalizePublicBaseUrl(process.env.PUBLIC_BASE_URL),
+    resendApiKey: (process.env.RESEND_API_KEY || "").trim(),
+    contactFromEmail: (process.env.CONTACT_FROM_EMAIL || "").trim(),
+    contactToEmail: (process.env.CONTACT_TO_EMAIL || "").trim()
 }

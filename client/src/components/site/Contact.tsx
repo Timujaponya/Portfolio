@@ -3,6 +3,8 @@ import { motion } from 'motion/react'
 import { useState, type FormEvent } from 'react'
 import type { Profile } from '../../types/portfolio'
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+
 interface ContactProps {
   profile: Profile | null
 }
@@ -14,11 +16,51 @@ export function Contact({ profile }: ContactProps) {
     subject: '',
     message: '',
   })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitResult, setSubmitResult] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
-    alert('Mesajin alindi. En kisa surede donus yapacagim.')
-    setFormData({ name: '', email: '', subject: '', message: '' })
+
+    if (isSubmitting) return
+
+    setIsSubmitting(true)
+    setSubmitResult(null)
+
+    try {
+      const res = await fetch(`${API_URL}/contact`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const contentType = res.headers.get('content-type') || ''
+      const payload = contentType.includes('application/json') ? await res.json() : null
+
+      if (!res.ok) {
+        setSubmitResult({
+          type: 'error',
+          message: payload?.message || 'Mesaj gonderilemedi. Lutfen tekrar deneyin.',
+        })
+        return
+      }
+
+      setSubmitResult({
+        type: 'success',
+        message: payload?.message || 'Mesajiniz alindi. En kisa surede donus yapacagim.',
+      })
+      setFormData({ name: '', email: '', subject: '', message: '' })
+    } catch (error) {
+      console.error('Contact form submit error:', error)
+      setSubmitResult({
+        type: 'error',
+        message: 'Baglanti hatasi olustu. Lutfen daha sonra tekrar deneyin.',
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -133,11 +175,22 @@ export function Contact({ profile }: ContactProps) {
             />
             <button
               type="submit"
+              disabled={isSubmitting}
               className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-sky-600 px-7 py-3 font-semibold text-white transition hover:bg-sky-700"
             >
-              Send Message
+              {isSubmitting ? 'Sending...' : 'Send Message'}
               <Send size={17} />
             </button>
+
+            {submitResult && (
+              <p
+                className={`text-sm ${submitResult.type === 'success' ? 'text-emerald-700' : 'text-rose-700'}`}
+                role="status"
+                aria-live="polite"
+              >
+                {submitResult.message}
+              </p>
+            )}
           </motion.form>
         </div>
       </div>
