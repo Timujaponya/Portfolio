@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import IconPicker from '../../IconPicker';
 import { API_URL } from '../constants';
 import type { Profile } from '../types';
+import { resolveMediaUrl } from '../../utils/mediaUrl';
 
 interface ProfileEditorProps {
   profile: Profile | null;
-  onSave: (profile: Profile) => void;
+  onSave: (profile: Profile) => Promise<boolean>;
 }
 
 const EMPTY_PROFILE: Profile = {
@@ -163,6 +164,9 @@ const ProfileEditor = ({ profile, onSave }: ProfileEditorProps) => {
     setFormData({ ...formData, techStack: updated });
   };
 
+  const resolvedAvatarUrl = resolveMediaUrl(formData.avatarUrl);
+  const resolvedCvUrl = resolveMediaUrl(formData.cvUrl);
+
   return (
     <form className="editor-form" onSubmit={handleSubmit}>
       <h2>Profil Bilgileri</h2>
@@ -255,17 +259,13 @@ const ProfileEditor = ({ profile, onSave }: ProfileEditorProps) => {
             {formData.avatarUrl && (
               <div className="file-preview avatar-preview">
                 <img
-                  src={
-                    formData.avatarUrl.startsWith('http')
-                      ? formData.avatarUrl
-                      : `${window.location.origin}${formData.avatarUrl}`
-                  }
+                  src={resolvedAvatarUrl}
                   alt="Avatar Preview"
                   className="avatar-preview-img"
                 />
                 <div className="preview-actions">
                   <a
-                    href={formData.avatarUrl.startsWith('http') ? formData.avatarUrl : `${window.location.origin}${formData.avatarUrl}`}
+                    href={resolvedAvatarUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="view-file-btn"
@@ -315,7 +315,7 @@ const ProfileEditor = ({ profile, onSave }: ProfileEditorProps) => {
             </div>
             {formData.cvUrl && (
               <div className="file-preview">
-                <a href={formData.cvUrl} target="_blank" rel="noopener noreferrer" className="view-file-btn">
+                <a href={resolvedCvUrl} target="_blank" rel="noopener noreferrer" className="view-file-btn">
                   {formData.cvUrl.includes('http') ? 'Linki Aç' : 'PDF Görüntüle'}
                 </a>
                 <button

@@ -2,6 +2,22 @@
 
 const profileService = require("../services/profileService");
 
+function getPublicBaseUrl(req) {
+    const envBaseUrl = process.env.PUBLIC_BASE_URL?.replace(/\/+$/, "");
+    if (envBaseUrl) {
+        return envBaseUrl;
+    }
+
+    const forwardedProto = req.headers["x-forwarded-proto"];
+    const forwardedHost = req.headers["x-forwarded-host"];
+
+    if (forwardedProto && forwardedHost) {
+        return `${forwardedProto}://${forwardedHost}`;
+    }
+
+    return `${req.protocol}://${req.get("host")}`;
+}
+
 // GET /api/profile
 exports.getProfile = async (req, res, next) => {
     try {
@@ -10,14 +26,16 @@ exports.getProfile = async (req, res, next) => {
             return res.status(404).json({ message: "Profile not found" });
         }
 
-        // PUBLIC_BASE_URL'i al
-        const publicBaseUrl = process.env.PUBLIC_BASE_URL?.replace(/\/+$/, "");
+        const baseUrl = getPublicBaseUrl(req);
         // avatarUrl ve cvUrl path ise tam URL'ye çevir
         const patchUrl = (url) => {
             if (!url) return url;
             if (/^https?:\/\//.test(url)) return url;
-            if (publicBaseUrl && url.startsWith("/uploads/")) {
-                return `${publicBaseUrl}${url}`;
+            if (url.startsWith("/uploads/")) {
+                return `${baseUrl}${url}`;
+            }
+            if (url.startsWith("uploads/")) {
+                return `${baseUrl}/${url}`;
             }
             return url;
         };
@@ -47,8 +65,11 @@ exports.updateProfile = async (req, res, next) => {
         const normalizeUrl = (url) => {
             if (!url) return url;
             // Eğer tam URL ise ve /uploads/ ile başlıyorsa sadece path'i al
-            const match = url.match(/\/uploads\/[^\s?#]+/);
-            if (match) return match[0];
+            const match = url.match(/\/uploads\/[^\s?#]+|^uploads\/[^\s?#]+/);
+            if (match) {
+                const matchedPath = match[0];
+                return matchedPath.startsWith("/") ? matchedPath : `/${matchedPath}`;
+            }
             return url;
         };
         if (req.body.avatarUrl) req.body.avatarUrl = normalizeUrl(req.body.avatarUrl);

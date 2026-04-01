@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import './IconPicker.css';
+import { resolveMediaUrl } from './utils/mediaUrl';
 
 interface IconPickerProps {
   value: string;
@@ -195,7 +196,7 @@ const IconPicker = ({ value, onChange, label = 'Icon Seç', allowCustomUpload = 
   const renderIcon = (iconName: string) => {
     // Custom uploaded icon ise
     if (iconName.startsWith('custom:')) {
-      const iconUrl = iconName.replace('custom:', '');
+      const iconUrl = resolveMediaUrl(iconName.replace('custom:', ''));
       return <img src={iconUrl} alt="custom icon" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />;
     }
     

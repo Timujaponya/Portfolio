@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { ExternalLink, Github } from 'lucide-react'
 import { motion } from 'motion/react'
 import type { Project } from '../../types/portfolio'
+import { resolveMediaUrl } from '../../utils/mediaUrl'
 
 type FilterType = 'all' | 'web' | 'game' | 'tools'
 
@@ -63,7 +64,7 @@ export function Projects({ projects }: ProjectsProps) {
             >
               <div className="relative aspect-video overflow-hidden bg-slate-100">
                 <img
-                  src={project.imageUrl || '/images/background-pattern.png'}
+                  src={resolveMediaUrl(project.imageUrl) || '/images/background-pattern.png'}
                   alt={project.title}
                   className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
                 />

@@ -1,6 +1,7 @@
 import { Download, Github, Globe, Linkedin, Mail, Twitter } from 'lucide-react'
 import { motion } from 'motion/react'
 import type { Profile } from '../../types/portfolio'
+import { resolveMediaUrl } from '../../utils/mediaUrl'
 
 interface HeroProps {
   profile: Profile | null
@@ -8,6 +9,8 @@ interface HeroProps {
 
 export function Hero({ profile }: HeroProps) {
   const social = profile?.socialLinks
+  const avatarUrl = resolveMediaUrl(profile?.avatarUrl)
+  const cvUrl = resolveMediaUrl(profile?.cvUrl)
 
   return (
     <section
@@ -44,9 +47,9 @@ export function Hero({ profile }: HeroProps) {
               Get in Touch
               <Mail size={18} />
             </motion.a>
-            {profile?.cvUrl && (
+            {cvUrl && (
               <motion.a
-                href={profile.cvUrl}
+                href={cvUrl}
                 target="_blank"
                 rel="noreferrer"
                 whileHover={{ scale: 1.04 }}
@@ -91,8 +94,8 @@ export function Hero({ profile }: HeroProps) {
         >
           <div className="absolute -inset-3 rounded-[2rem] bg-gradient-to-r from-sky-300/40 to-indigo-300/40 blur-2xl" />
           <div className="relative aspect-square w-full max-w-md overflow-hidden rounded-[2rem] border border-white/60 bg-white p-2 shadow-2xl">
-            {profile?.avatarUrl ? (
-              <img src={profile.avatarUrl} alt={profile.name} className="h-full w-full rounded-[1.5rem] object-cover" />
+            {avatarUrl ? (
+              <img src={avatarUrl} alt={profile?.name || 'Profile'} className="h-full w-full rounded-[1.5rem] object-cover" />
             ) : (
               <div className="flex h-full w-full items-center justify-center rounded-[1.5rem] bg-gradient-to-br from-sky-100 to-indigo-100 text-7xl">
                 👨‍💻

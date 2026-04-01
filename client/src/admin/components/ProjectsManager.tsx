@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import IconPicker from '../../IconPicker';
+import { resolveMediaUrl } from '../../utils/mediaUrl';
 import { API_URL } from '../constants';
 import type { GithubRepository, Project } from '../types';
 
@@ -233,6 +234,7 @@ const ProjectsManager = ({ projects, githubProjects, editingProject, onEdit, onS
 
   const hasProjects = safeProjects.length > 0;
   const hasGithubProjects = safeGithubProjects.length > 0;
+  const previewImageUrl = resolveMediaUrl(formData.imageUrl);
 
   return (
     <div className="manager-container">
@@ -405,7 +407,7 @@ const ProjectsManager = ({ projects, githubProjects, editingProject, onEdit, onS
             </div>
             {formData.imageUrl && (
               <div className="image-preview">
-                <img src={formData.imageUrl} alt="Preview" />
+                <img src={previewImageUrl} alt="Preview" />
                 <button type="button" onClick={() => setFormData((prev) => ({ ...prev, imageUrl: '' }))} className="remove-image-btn">
                   Görseli Kaldır
                 </button>
