@@ -16,16 +16,18 @@ const app = express();
 
 app.use(cors({
     origin: (origin, callback) => {
+        const normalizedOrigin = String(origin || "").trim().replace(/\/+$/, "").toLowerCase();
+
         // Server-to-server veya curl isteklerinde Origin olmayabilir.
         if (!origin) {
             return callback(null, true);
         }
 
-        if (corsOrigins.includes(origin)) {
+        if (corsOrigins.includes(normalizedOrigin)) {
             return callback(null, true);
         }
 
-        return callback(new Error("Not allowed by CORS"));
+        return callback(new Error(`Not allowed by CORS: ${origin}`));
     },
     credentials: true // cookie veya Authorization header göndermeye izin verir
 }))

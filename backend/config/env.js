@@ -8,17 +8,22 @@ const defaultCorsOrigins = [
     "http://127.0.0.1:5174"
 ];
 
+function normalizeOrigin(origin) {
+    return String(origin || "").trim().replace(/\/+$/, "").toLowerCase();
+}
+
 function parseCorsOrigins(origins) {
     if (!origins) {
-        return defaultCorsOrigins;
+        return defaultCorsOrigins.map(normalizeOrigin);
     }
 
-    const parsed = origins
-        .split(",")
+    const parsed = String(origins)
+        .split(/[\s,]+/)
         .map((origin) => origin.trim())
-        .filter(Boolean);
+        .filter(Boolean)
+        .map(normalizeOrigin);
 
-    return parsed.length ? parsed : defaultCorsOrigins;
+    return parsed.length ? [...new Set(parsed)] : defaultCorsOrigins.map(normalizeOrigin);
 }
 
 function normalizePublicBaseUrl(value) {
