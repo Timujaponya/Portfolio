@@ -169,10 +169,11 @@ const ProfileEditor = ({ profile, onSave }: ProfileEditorProps) => {
 
   const addTech = () => {
     const name = prompt('Teknoloji adı:');
-    if (name) {
+    const normalizedName = (name || '').trim();
+    if (normalizedName) {
       setFormData({
         ...formData,
-        techStack: [...formData.techStack, { name, icon: 'faCode' }],
+        techStack: [...formData.techStack, { name: normalizedName, icon: 'faCode' }],
       });
     }
   };
@@ -186,7 +187,7 @@ const ProfileEditor = ({ profile, onSave }: ProfileEditorProps) => {
 
   const updateTechIcon = (index: number, icon: string) => {
     const updated = [...formData.techStack];
-    updated[index] = { ...updated[index], icon };
+    updated[index] = { ...updated[index], icon: icon || 'faCode' };
     setFormData({ ...formData, techStack: updated });
   };
 

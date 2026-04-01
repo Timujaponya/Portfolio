@@ -3,6 +3,7 @@ import type { Profile, Service } from '../../types/portfolio'
 import { FeedbackCard } from '../common/FeedbackCard'
 import { DynamicText } from '../common/DynamicText'
 import { useLanguage } from '../../i18n/LanguageContext'
+import { IconValue } from '../common/IconValue'
 
 interface SkillsProps {
   profile: Profile | null
@@ -43,8 +44,9 @@ export function Skills({ profile, services }: SkillsProps) {
                 techStack.map((tech) => (
                   <span
                     key={`${tech.name}-${tech.icon || 'default'}`}
-                    className="rounded-full border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-semibold text-sky-700"
+                    className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-semibold text-sky-700"
                   >
+                    <IconValue value={tech.icon} size={14} />
                     <DynamicText text={tech.name} fallback={tech.name} />
                   </span>
                 ))
