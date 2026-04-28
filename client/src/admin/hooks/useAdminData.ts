@@ -83,10 +83,15 @@ export const useAdminData = ({ isAuthenticated, onNotify }: UseAdminDataParams):
         const method = project._id ? 'PUT' : 'POST';
         const url = project._id ? `${API_URL}/projects/${project._id}` : `${API_URL}/projects`;
 
+        const payload: Project = { ...project };
+        if (method === 'POST' || !payload._id) {
+          delete payload._id;
+        }
+
         const res = await fetch(url, {
           method,
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(project),
+          body: JSON.stringify(payload),
         });
 
         if (!res.ok) {
@@ -133,10 +138,15 @@ export const useAdminData = ({ isAuthenticated, onNotify }: UseAdminDataParams):
         const method = service._id ? 'PUT' : 'POST';
         const url = service._id ? `${API_URL}/services/${service._id}` : `${API_URL}/services`;
 
+        const payload: Service = { ...service };
+        if (method === 'POST' || !payload._id) {
+          delete payload._id;
+        }
+
         const res = await fetch(url, {
           method,
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(service),
+          body: JSON.stringify(payload),
         });
 
         if (!res.ok) {
@@ -183,10 +193,15 @@ export const useAdminData = ({ isAuthenticated, onNotify }: UseAdminDataParams):
         const method = profileData._id ? 'PUT' : 'POST';
         const url = profileData._id ? `${API_URL}/profile/${profileData._id}` : `${API_URL}/profile`;
 
+        const payload: Profile = { ...profileData };
+        if (method === 'POST' || !payload._id) {
+          delete payload._id;
+        }
+
         const res = await fetch(url, {
           method,
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(profileData),
+          body: JSON.stringify(payload),
         });
 
         if (!res.ok) {

@@ -29,6 +29,13 @@ exports.getProjectsAdmin = async(req, res, next) => {
 // POST /api/projects
 exports.postProject = async (req, res, next) => {
     try {
+        // Yeni kayıt oluştururken client'tan gelen boş/yanlış _id alanı Mongoose CastError'a sebep olabilir.
+        if (req.body && Object.prototype.hasOwnProperty.call(req.body, "_id")) {
+            const rawId = req.body._id;
+            if (!rawId || String(rawId).trim() === "") {
+                delete req.body._id;
+            }
+        }
         const project = await projectService.createProject(req.body);
         res.status(201).json({ message: "project added" , project});
     } catch (err) {

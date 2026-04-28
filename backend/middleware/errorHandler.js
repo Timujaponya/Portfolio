@@ -15,10 +15,18 @@ function errorHandler(err, req, res, next) {
     });
   }
 
-  if (err.message === "Not allowed by CORS") {
+  if (typeof err.message === "string" && err.message.startsWith("Not allowed by CORS")) {
     return res.status(403).json({
       status: "error",
       message: "CORS hatası: Bu origin için API erişimine izin verilmiyor.",
+    });
+  }
+
+  // Mongoose / Mongo validation & cast errors -> 400
+  if (err && (err.name === "ValidationError" || err.name === "CastError")) {
+    return res.status(400).json({
+      status: "error",
+      message: err.message || "Geçersiz veri",
     });
   }
 
